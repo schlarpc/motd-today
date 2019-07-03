@@ -1,0 +1,5 @@
+overengineered-cloudfront-s3-static-website/
+*.json
+__pycache__/
+*.pyc
+

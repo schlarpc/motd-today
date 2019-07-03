@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>motd today</title>
+	<link href='https://fonts.googleapis.com/css?family=Alegreya+Sans+SC:700|Roboto:400,100,300,500,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="stylesheet.css" type="text/css">
+	<style type="text/css">
+	/* http://meyerweb.com/eric/tools/css/reset/ 
+	v2.0 | 20110126
+	License: none (public domain)
+	*/
+
+	html, body, div, span, applet, object, iframe,
+	h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+	a, abbr, acronym, address, big, cite, code,
+	del, dfn, em, img, ins, kbd, q, s, samp,
+	small, strike, strong, sub, sup, tt, var,
+	b, u, i, center,
+	dl, dt, dd, ol, ul, li,
+	fieldset, form, label, legend,
+	table, caption, tbody, tfoot, thead, tr, th, td,
+	article, aside, canvas, details, embed, 
+	figure, figcaption, footer, header, hgroup, 
+	menu, nav, output, ruby, section, summary,
+	time, mark, audio, video {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		font-size: 100%;
+		font: inherit;
+		vertical-align: baseline;
+	}
+	/* HTML5 display-role reset for older browsers */
+	article, aside, details, figcaption, figure, 
+	footer, header, hgroup, menu, nav, section {
+		display: block;
+	}
+	body {
+		line-height: 1;
+	}
+	ol, ul {
+		list-style: none;
+	}
+	blockquote, q {
+		quotes: none;
+	}
+	blockquote:before, blockquote:after,
+	q:before, q:after {
+		content: '';
+		content: none;
+	}
+	table {
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		font-family: 'Roboto', sans-serif;
+		background-color: #eeeded;
+		height: 100%;
+		overflow: hidden;
+	}
+
+
+	/* SIDEBAR */
+	.sidebar {
+		width: 280px;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		top: 0;
+		box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+		z-index: 2;
+		background-color: #FFF;
+	}
+	.sidebar figure {
+		text-align: center;
+		padding: 24px 24px 24px 24px;
+	}
+	nav li {
+		height: 45px;
+		padding-top: 6px;
+		padding-left: 24px;
+	}
+	nav li h3{
+		font-weight: 300;
+		font-size: .8em;
+		margin-top: 4px;
+	}
+	nav li.active {
+		background-color: #ff9800 !important;
+		color: #FFF;
+	}
+	nav li:hover {
+		cursor: pointer;
+		background-color: #fff5e6;
+	}
+
+	/* Main Content */
+	.main {
+		width: calc(100% - 280px);
+		position: absolute;
+		right: 0;
+		top: 0;
+		z-index: 1;
+		overflow-y: scroll;
+		height: 100%;
+	}
+	.heropanel {
+		height: 360px;
+		width: 100%;
+		text-align: center;
+		padding: 18px 18px 18px 18px;
+		overflow: hidden;
+		position: relative;
+		color: #FFF;
+	}
+	.heropanel h1 {
+		font-family: 'Alegreya Sans SC', sans-serif;
+		font-weight: 700;
+		font-size: 4em;
+		margin-bottom: 18px;
+		text-shadow: 0px 0px 11px rgba(0, 0, 0, 0.5);
+	}
+	.heropanel p {
+		display: inline-block;
+		max-width: 720px;
+		text-shadow: 0px 0px 11px rgba(0, 0, 0, 0.5);
+		line-height: 1.5em;
+	}
+	.heropanel:before {
+		position: absolute;
+		z-index: -1;
+		content: "";
+		background-image: url('img/arena.jpg');
+		background-size: cover;
+		background-position: center center;
+		width: calc(100% + 30px);
+		height: calc(100% + 30px);
+		left: -15px;
+		top: -15px;
+		-webkit-filter: blur(4px);
+          filter: blur(4px);
+	}
+	.heropanel.joust:before {
+		background-image: url('img/joust.jpg');
+	}
+	.heropanel.arena:before {
+		background-image: url('img/arena.jpg');
+	}
+	.heropanel.assault:before {
+		background-image: url('img/assault.jpg');
+	}
+	.heropanel.conquest:before {
+		background-image: url('img/conquest.jpg');
+	}
+	.heropanel.siege:before {
+		background-image: url('img/siege.jpg');
+	}
+	.hero {
+		position: relative;
+		top: 45%;
+		-webkit-transform: translateY(-50%);
+			-ms-transform: translateY(-50%);
+				transform: translateY(-50%);
+	}
+
+
+	/* Team Divider stuff (ick) */
+	.teamdivider {
+		min-height: 100px;
+		width: 100%;
+		background-color: #f87a18;
+		text-align: center;
+		position: relative;
+	}
+	.teamdivider img {
+		display: inline-block;
+		height: 80px;
+		margin-right: 10px;
+		margin-left: 10px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.teamdivider .team {
+		width: 45%;
+		float: right;
+	}
+	.team:first-of-type {
+		float: left;
+
+	}
+	.teamdivider .vs {
+		position: absolute;
+		width: 80px;
+		height: 80px;
+		margin-top: -40px;
+		margin-left: -40px;
+		display: block;
+		left: 50%;
+		top: 50%;
+		line-height: 80px;
+		font-family: 'Alegreya Sans SC', sans-serif;
+		font-weight: 700;
+		color: #FFF;
+		font-size: 3em;
+	}
+
+	/* CARDS! */
+	.cards {
+		width: 970px;
+		margin: auto;
+		padding-top: 40px;
+	}
+	.card {
+		background-color: #FFF;
+		box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+		height: 256px;
+		min-width: 256px;
+		float: left;
+		margin-bottom: 40px;
+	}
+	.short {
+		margin-left: 40px;
+		width: 256px;
+	}
+	.long {
+		width: 670px;
+	}
+	.extralong {
+		width: 970px;
+	}
+	.card h1 {
+		height: 46px;
+		background-color: #ffa726;
+		width: 100%;
+		line-height: 46px;
+		color: #FFF;
+		padding-left: 18px;
+		font-size: 1.4em;
+		font-weight: 100;
+		text-align: left;
+	}
+	#modifiers {
+		text-align: center;
+	}
+	.card .modifiers {
+		margin: auto;
+	}
+	.modifier {
+		display: inline-block;
+		height: 100%;
+		position: relative;
+		width: 140px;
+		height: 40px;
+	}
+	.modifier h2 {
+		top: 150px;
+		position: absolute;
+		width: 100%;
+		display: block;
+		font-size: 1.2em;
+		font-weight: 300;
+	}
+	.modifier span {
+		display: block;
+		max-width: 120px;
+		line-height: 1.3em;
+		font-size: 1.3em;
+		position: absolute;
+		left: 50%;
+		top: 95px;
+		font-weight: 500;
+
+		-webkit-transform: translateX(-50%) translateY(-50%);
+		      		-ms-transform: translateX(-50%) translateY(-50%);
+		          		transform: translateX(-50%) translateY(-50%);
+
+	}
+	.quadrant {
+
+		width: 128px;
+		height: 105px;
+		float: left;
+		position: relative;
+		text-align: center;
+	}
+	.quadrant h2 {
+		font-size: 1.2em;
+		font-weight: 300;
+		margin-top: 6px;
+	}
+	.quadrant span {
+		display: block;
+		font-size: 1.4em;
+		font-weight: 500;
+		margin-top: 26px;
+	}
+
+
+	/* Utility */
+	.clear {
+		clear: both;
+	}
+
+
+	</style>
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-XXXXXXXX-Y']);
+		_gaq.push(['_trackPageview']);
+		(function()
+		{
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+</head>
+<body>
+	<aside class="sidebar">
+		<figure>
+			<img src="logo.png" />
+		</figure>
+		<nav>
+			<ul>
+				<!--
+				<li class="active">
+					<h2>Laser Light Show</h2>
+					<h3>October 6th, 2015</h3>
+				</li>
+				<li>
+					<h2>Laser Light Show</h2>
+					<h3>October 6th, 2015</h3>
+				</li>
+				<li>
+					<h2>Laser Light Show</h2>
+					<h3>October 6th, 2015</h3>
+				</li>
+				<li>
+					<h2>Laser Light Show</h2>
+					<h3>October 6th, 2015</h3>
+				</li>
+				<li>
+					<h2>Laser Light Show</h2>
+					<h3>October 6th, 2015</h3>
+				</li>
+				-->
+			</ul>
+		</nav>
+	</aside>
+	<!--
+	<section class="main">
+		<div class="heropanel">
+			<div class="hero">
+				<h1>Laser Light Show</h1>
+				<p>Do you find yourself wanting to remember the "Good ole days" of SMITE? Well, now you can take a trip down memory lane in this Conquest match limited to the first 20 gods released. We invited the Minotaur too, but he turned down the invitation, I guess he's enjoying his retirement in the jungle.</p>
+			</div>
+		</div>
+		<div class="teamdivider">
+			<div class="symmetrical">
+				<img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" />
+			</div>
+			<div class="asymmetrical">
+				<span class="vs">VS</span>
+				<div class="team">
+					<img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" />
+				</div>
+				<div class="team">
+					<img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" /><img src="//hirezstudios.blob.core.windows.net/sitefinity/smite-god-icons/1669.jpg" />
+				</div>
+				<div class="clear">
+				</div>
+			</div>
+		</div>
+		<div class="cards">
+			<div class="card long" id="selection">
+				<h1>selection</h1>
+				<div class="modifiers">
+					<div class="modifier">
+						<span>Multiples Allowed</span>
+					</div>
+					<div class="modifier diff">
+						<span>Invert Pick</span>
+					</div>
+					<div class="modifier">
+						<span>Draft Pick</span>
+					</div>
+					<div class="modifier">
+						<span>All Gods Available</span>
+					</div>
+				</div>
+			</div>
+			<div class="card short" id="info">
+				<h1>info</h1>
+				<div class="quadrant">
+					<span>10,000</span>
+					<h2>Gold</h2>
+				</div>
+				<div class="quadrant">
+					<span>10,000</span>
+					<h2>Gold</h2>
+				</div>
+				<div class="quadrant">
+					<span>10,000</span>
+					<h2>Gold</h2>
+				</div>
+				<div class="quadrant">
+					<span>10,000</span>
+					<h2>Gold</h2>
+				</div>
+			</div>
+			<div id="modifiers" class="card extralong">
+				<h1>modifiers</h1>
+				<div class="modifiers">
+					<div class="modifier">
+						<h2>XP</h2>
+						<span>Spooling Increased</span>
+					</div>
+					<div class="modifier diff">
+						<h2>Gold</h2>
+						<span>Spooling Increased</span>
+					</div>
+					<div class="modifier">
+						<h2>Mana</h2>
+						<span>Infinite</span>
+					</div>
+					<div class="modifier">
+						<h2>CDR</h2>
+						<span>50-80%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	-->
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		//json object for global access to json array;
+		var json;
+		//object of motds using timestamp as key
+		var motds = {};
+		//defaults to roll back to if not specified
+		var defaults = {"Siege":{"startingGold":2000,"teamSize":4,"startingLevel":3},"Assault":{"startingGold":3000,"teamSize":5,"startingLevel":5},"Joust":{"startingGold":1500,"teamSize":3,"startingLevel":3},"Conquest":{"startingGold":1500,"teamSize":5,"startingLevel":1},"Arena":{"startingGold":1500,"teamSize":5,"startingLevel":3}};
+		$(function() {
+			
+			$.getJSON("/data.json", function (data) {
+				var selected;
+
+				//Make motd data accessible everywhere
+				json = data
+				$.each(data['motds'], function( key, info ) {
+					if (key == 0) {
+						selected = info['startTime'];
+					}
+					motds[info['startTime']] = info;
+
+					//Date
+					var date = new Date(info['startTime']*1000);
+					$('.sidebar nav ul').append('<li id="'+info['startTime']+'"><h2>'+info['name']+'</h2><h3>'+date.toLocaleString('en-us', { month: "long", day: 'numeric' })+'</h3></li>')
+					
+				});
+				viewDay(selected);
+				$('nav li').click(function() {
+					viewDay($(this).attr('id'));
+				})
+			});
+		})
+
+		function viewDay(timestamp) {
+			$('nav li').removeClass('active');
+			$('#'+timestamp).addClass('active');
+			$('.main').remove();
+			var day = $('<section class="main"><div class="heropanel '+motds[timestamp]['gameMode'].toLowerCase()+'"><div class="hero"><h1>'+motds[timestamp]['name']+'</h1><p>'+motds[timestamp]['description']+'</p></div></div><div class="teamdivider"></div><div class="cards"><div id="modifiers" class="card long"><h1>modifiers</h1><div class="modifiers"></div></div><div class="card short" id="info"><h1>info</h1></div></div></section>');
+
+			console.log(defaultFallback('startingGold',motds[timestamp]));
+			//Adding in the known info
+			info = day.find('#info');
+			info.append('<div class="quadrant"><span>'+motds[timestamp]['gameMode']+'</span><h2>Map</h2></div>');
+			info.append('<div class="quadrant"><span>'+defaultFallback('startingLevel',motds[timestamp])+'</span><h2>Level</h2></div>');
+			info.append('<div class="quadrant"><span>'+defaultFallback('startingGold',motds[timestamp])+'</span><h2>Gold</h2></div>');
+			info.append('<div class="quadrant"><span>'+defaultFallback('teamSize',motds[timestamp])+'</span><h2>Team Size</h2></div>');
+
+			//Selection
+			modifiers = day.find('#modifiers');
+			if (motds[timestamp]['godChoice'] == 'All') {
+				modifiers.append('<div class="modifier"><span>All Gods Available</span></div>');
+			}
+			if (motds[timestamp]['godSelection']=="Random") {
+				modifiers.append('<div class="modifier"><span>Random Pick</span></div>');
+			}
+
+			//Modifiers
+			if (motds[timestamp].hasOwnProperty('infiniteMana') && motds[timestamp]['infiniteMana'] == true) {
+				modifiers.append('<div class="modifier"><span>Infinite Mana</span></div>');
+			}
+			if (motds[timestamp].hasOwnProperty('startingCDR') && motds[timestamp].hasOwnProperty('maximumCDR')) {
+				var cdrstring;
+				if (motds[timestamp]['startingCDR'] == motds[timestamp]['maximumCDR']) {
+					cdrstring = motds[timestamp]['maximumCDR']+"%";
+				} else {
+					cdrstring = motds[timestamp]['startingCDR'] + "-" + motds[timestamp]['maximumCDR'] + "%";
+				}
+				modifiers.append('<div class="modifier"><span>'+cdrstring+' CDR</span></div>');
+			}
+
+			$('body').append(day);
+		}
+
+		function defaultFallback(property, object) {
+			if (object.hasOwnProperty(property)) {
+				return object[property];
+			} else {
+				console.log(object['gameMode'])
+				return 1000;
+			}
+		}
+
+		function formatAMPM(date) {
+		  var hours = date.getHours();
+		  var minutes = date.getMinutes();
+		  var ampm = hours >= 12 ? 'pm' : 'am';
+		  hours = hours % 12;
+		  hours = hours ? hours : 12; // the hour '0' should be '12'
+		  minutes = minutes < 10 ? '0'+minutes : minutes;
+		  var strTime = hours + ':' + minutes + ' ' + ampm;
+		  return strTime;
+		}
+	</script>
+</body>
+</html>

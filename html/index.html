@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>motd.today</title>
+    <link rel="shortcut icon" href="/favicon.png" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html, body {
+        background-color: black;
+        color: white;
+        font-family: sans-serif;
+        line-height: 1.2;
+        font-size: 16px;
+      }
+      body {
+        padding: .2em 1em;
+      }
+      h1 img {
+        vertical-align: middle;
+      }
+      h1 {
+        display: inline-block;
+      }
+      .credits {
+        display: inline-block;
+        margin-left: 3em;
+      }
+      a {
+        color: inherit;
+        color: #ccc;
+        text-decoration: inherit;
+      }
+      .motd {
+        border: 3px solid rgb(5, 93, 104);
+        margin-left: auto;
+        margin-right: auto;
+        width: 70%;
+        padding: 1em;
+      }
+      .motd .internalName {
+        color: gray;
+        font-size: 80%;
+      }
+      .motd .internalName:not(:empty)::before {
+        content: "(";
+      }
+      .motd .internalName:not(:empty)::after {
+        content: ")";
+      }
+      .motd .startTime::before {
+        content: "Starting: ";
+      }
+      .motd:not(:first-of-type) {
+        margin-top: 2em;
+      }
+      .motd .teamSize::before {
+        content: "Team size: ";
+      }
+      .motd .gameMode::before {
+        content: "Game mode: ";
+      }
+      .motd .allowedGods {
+        line-height: 48px;
+      }
+
+      .motd .allowedGods img {
+        width: 48px;
+        height: 48px;
+        vertical-align: bottom;
+      }
+      .motd .allowedGods .team2:not(:empty)::before {
+        content: " VS ";
+        display: inline-block;
+        width: 48px;
+        font-weight: bold;
+        text-align: center;
+      }
+      .info {
+        text-align: center;
+      }
+      template {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+        <h1><a href="/"><img src="smite.jpg" alt="Smite"> Match of the Day</a></h1>
+        <span class="credits">
+            Presented with love by <a href="https://smite.guru/profile/2254222-schlarpc">schlarpc</a> and <a href="https://ball.holdings/">Ball Holdings</a>;
+            now <a href="https://github.com/schlarpc/motd-today">open source</a>!
+        </span>
+    </header>
+    <div class="info">Loading MOTD info...</div>
+    <div class="motds"></div>
+    <template class="template-motd">
+      <div class="motd">
+        <h2><a class="name"></a> <span class="internalName"></span></h2>
+        <h3 class="startTime"></h3>
+        <p class="description"></p>
+        <ul class="rules"></ul>
+        <div class="allowedGods">
+          <span class="team1"></span><span class="team2"></span>
+        </div>
+      </div>
+    </template>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script>
+      var allGods = {};
+      var allMOTDs = [];
+
+      function renderMOTD(motd) {
+        var motdSection = $($('.template-motd').html());
+        motdSection.find('.name').text(motd['name']).attr('href', '/?id=' + motd['startTime']).attr('name', motd['startTime']);
+        motdSection.find('.internalName').text(motd['internalName']);
+        motdSection.find('.description').html(motd['description']);
+        motdSection.find('.startTime').text(moment(motd['startTime'] * 1000).format("dddd, MMMM D YYYY, h:mm a"));
+
+        var existingRules = [];
+        var rulesSection = motdSection.find('.rules');
+
+        var ruleRenderers = Object.entries({
+            "gameMode": function(v) { return "Map: " + v },
+            "teamSize": function(v) { return "Team Size: " + v },
+            "godChoice": function(v) { return "Gods: " + v },
+            "godSelection": function(v) { return "Selection: " + v },
+            "startingLevel": function(v) { return "Starting Level: " + v },
+            "startingGold": function(v) { return "Starting Gold: " + v.toLocaleString() },
+            "startingCDR": function(v) { return "Starting Cooldown Reduction: " + v + "%"},
+            "maximumCDR": function(v) { return "Maximum Cooldown Reduction: " + v + "%" },
+            "infiniteMana": function (v) { return "Infinite Mana" },
+            "fastGoldSpooling": function(v) { return "Fast Gold Spooling" },
+            "fastXPSpooling": function(v) { return "Fast Experience Spooling" },
+            "noBaseHealing": function(v) { return "Fountain Healing Disabled" },
+            "arenaScoringPortalBrutesOnly": function(v) { return "Only brute minions remove tickets when entering portals" },
+            "arenaScoringNoMinionsKills": function(v) { return "Minion kills don't remove tickets" },
+            "arenaScoringStartingTickets": function(v) { return "Starting Tickets: " + v },
+        });
+
+        for (var ruleRendererIndex = 0; ruleRendererIndex < ruleRenderers.length; ruleRendererIndex++) {
+          var ruleAttribute = ruleRenderers[ruleRendererIndex][0];
+          var ruleRenderer = ruleRenderers[ruleRendererIndex][1];
+          if (motd.hasOwnProperty(ruleAttribute)) {
+            rulesSection.append($('<li>').text(ruleRenderer(motd[ruleAttribute])));
+
+          };
+        }
+
+        for (var ruleIndex = 0; ruleIndex < motd['unparsedRules'].length; ruleIndex++) {
+          var rule = motd['unparsedRules'][ruleIndex];
+          rulesSection.append($('<li>').text(rule));
+        }
+
+        if (motd.hasOwnProperty('allowedGods')) {
+          for (var teamIndex = 0; teamIndex < motd['allowedGods'].length; teamIndex++) {
+            var teamGods = motd['allowedGods'][teamIndex];
+            teamGodsSection = motdSection.find('.allowedGods .team' + (teamIndex + 1));
+            for (var godIndex = 0; godIndex < teamGods.length; godIndex++) {
+              var god = allGods[teamGods[godIndex]];
+              var godSlug = god['name'].toLowerCase().replace(/ /g, "-")
+              var godLink = $('<a>').attr('href', 'https://www.smitegame.com/gods/' + godSlug);
+              var godImage = $('<img>').attr('src', god['icon']).attr('title', god['name']);
+              teamGodsSection.append(godLink.append(godImage));
+            }
+          }
+        }
+        $('.motds').append(motdSection);
+      }
+
+      var urlParams;
+      (window.onpopstate = function () {
+          var match,
+              pl     = /\+/g,  // Regex for replacing addition symbol with a space
+              search = /([^&=]+)=?([^&]*)/g,
+              decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+              query  = window.location.search.substring(1);
+          urlParams = {};
+          while (match = search.exec(query))
+              urlParams[decode(match[1])] = decode(match[2]);
+      })();
+
+      $(function() {
+        $.getJSON('data.json', function(data) {
+          allGods = data['gods'];
+          allMOTDs = data['motds'];
+          $('.info').hide();
+
+          if (!urlParams.hasOwnProperty('id')) {
+            for (var motdIndex = 0; motdIndex < allMOTDs.length; motdIndex++) {
+              renderMOTD(allMOTDs[motdIndex]);
+            }
+          } else {
+            var idFound = false;
+            for (var motdIndex = 0; motdIndex < allMOTDs.length; motdIndex++) {
+              if (allMOTDs[motdIndex]['startTime'] == urlParams['id']) {
+                renderMOTD(allMOTDs[motdIndex]);
+                idFound = true;
+                break;
+              }
+            }
+            if (!idFound) {
+              $('.info').text('Specified MOTD not found.').show();
+            }
+          }
+        });
+      });
+    </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-36215950-4', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
