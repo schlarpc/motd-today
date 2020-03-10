@@ -38,8 +38,25 @@
         border: 3px solid rgb(5, 93, 104);
         margin-left: auto;
         margin-right: auto;
-        width: 70%;
+        min-width: 50%;
+        width: 50em;
+        max-width: 100%;
         padding: 1em;
+      }
+      .future{
+        opacity: 50%;
+        cursor: zoom-out;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .future:not(.clicked) {
+        cursor: zoom-in;
+      }
+      .future:not(.clicked) .description, .future:not(.clicked) .rules, .future:not(.clicked) .allowedGods{
+        display: none;
+      }
+      .future + .motd:not(.future){
+        border-color: blueviolet;
       }
       .motd .internalName {
         color: gray;
@@ -113,6 +130,7 @@
     <script>
       var allGods = {};
       var allMOTDs = [];
+      var currentTime = Date.now();
 
       function renderMOTD(motd) {
         var motdSection = $($('.template-motd').html());
@@ -120,6 +138,10 @@
         motdSection.find('.internalName').text(motd['internalName']);
         motdSection.find('.description').html(motd['description']);
         motdSection.find('.startTime').text(moment(motd['startTime'] * 1000).format("dddd, MMMM D YYYY, h:mm a"));
+        
+        if ((motd['startTime'] * 1000) > currentTime){
+          motdSection.addClass('future')
+        }
 
         var existingRules = [];
         var rulesSection = motdSection.find('.rules');
@@ -200,6 +222,7 @@
               if (allMOTDs[motdIndex]['startTime'] == urlParams['id']) {
                 renderMOTD(allMOTDs[motdIndex]);
                 idFound = true;
+                $(".future").removeClass("future");
                 break;
               }
             }
@@ -207,6 +230,9 @@
               $('.info').text('Specified MOTD not found.').show();
             }
           }
+          $('.future').click(function() {
+            $(this).toggleClass('clicked');
+          });
         });
       });
     </script>
