@@ -140,7 +140,7 @@
         motdSection.find('.startTime').text(moment(motd['startTime'] * 1000).format("dddd, MMMM D YYYY, h:mm a"));
         
         if ((motd['startTime'] * 1000) > currentTime){
-          motdSection.addClass('future')
+          motdSection.addClass('future');
         }
 
         var existingRules = [];
