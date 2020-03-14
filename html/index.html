@@ -18,6 +18,8 @@
       }
       body {
         padding: .2em 1em;
+        margin: 0;
+        padding-top: 0;
       }
       h1 img {
         vertical-align: middle;
@@ -33,6 +35,16 @@
         color: inherit;
         color: #ccc;
         text-decoration: inherit;
+      }
+      header {
+        position: fixed;
+        z-index: 1;
+        background-color: black;
+        width: 100%;
+        height: 100px;
+      }
+      .spaaace{
+        height: 100px;
       }
       .motd {
         border: 3px solid rgb(5, 93, 104);
@@ -112,6 +124,7 @@
             now <a href="https://github.com/schlarpc/motd-today">open source</a>!
         </span>
     </header>
+    <div class="spaaace"></div>
     <div class="info">Loading MOTD info...</div>
     <div class="motds"></div>
     <template class="template-motd">
@@ -216,6 +229,7 @@
             for (var motdIndex = 0; motdIndex < allMOTDs.length; motdIndex++) {
               renderMOTD(allMOTDs[motdIndex]);
             }
+            scrollToCurrentMOTD();
           } else {
             var idFound = false;
             for (var motdIndex = 0; motdIndex < allMOTDs.length; motdIndex++) {
@@ -235,6 +249,11 @@
           });
         });
       });
+      function scrollToCurrentMOTD(){
+        var currentMOTD = document.querySelector(".future + .motd:not(.future)");
+        currentMOTD.scrollIntoView();
+        window.scroll(0, window.scrollY-100);
+      }
     </script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
