@@ -20,7 +20,7 @@ class Config(enum.Enum):
 
 
 class SmiteClient:
-    _BASE_URL = "http://api.smitegame.com/smiteapi.svc/"
+    _BASE_URL = "https://api.smitegame.com/smiteapi.svc/"
     _RESPONSE_FORMAT = "json"
     _SESSION_TIMEOUT = 15 * 60
 
