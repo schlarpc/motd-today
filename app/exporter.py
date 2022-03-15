@@ -45,6 +45,7 @@ gamemode_normalize = {
     "Conquest (3x3)": "Conquest",
     "Conquest (3v3)": "Conquest",
     "Season 6 Conquest": "Conquest",
+    "Season 7 Conquest": "Conquest",
     "Siege (5v5)": "Siege",
     "ARAM- Asgard": "Assault",
     "ARAM- Asgard (Old)": "Assault",
@@ -161,7 +162,7 @@ def clean_motd(motd):
             if team_gods not in clean["allowedGods"]:
                 clean["allowedGods"].append(team_gods)
 
-    if motd["maxPlayers"] and gamemode_players[clean["gameMode"]] != int(
+    if motd["maxPlayers"] and gamemode_players.get(clean["gameMode"], None) != int(
         motd["maxPlayers"]
     ):
         clean["teamSize"] = int(motd["maxPlayers"])
