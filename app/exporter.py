@@ -74,7 +74,7 @@ def clean_motd(motd):
         part.replace("</li>", "") for part in motd["description"].split("<li>")
     ]
     description_parts = [part for part in description_parts if part]
-    clean["description"] = clean_description(description_parts[0])
+    clean["description"] = clean_description(description_parts[0] if description_parts else "")
     clean["rules"] = []
     clean["unparsedRules"] = []
 
