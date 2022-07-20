@@ -50,6 +50,7 @@ gamemode_normalize = {
     "ARAM- Asgard": "Assault",
     "ARAM- Asgard (Old)": "Assault",
     "ARAM- Asgard (2019)": "Assault",
+    "Challenge 11": "Corrupted Arena",
 }
 
 
