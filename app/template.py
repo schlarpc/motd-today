@@ -33,7 +33,7 @@ def create_template(website_template, website_parameters):
     template = Template()
 
     runtime = template.add_parameter(
-        Parameter("LambdaRuntime", Default="python3.7", Type="String")
+        Parameter("LambdaRuntime", Default="python3.11", Type="String")
     )
 
     smite_developer_id = template.add_parameter(
